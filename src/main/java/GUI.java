@@ -16,36 +16,67 @@ public class GUI extends JFrame {
     private JButton saveFile;
     private JTextArea textArea;
     private JScrollPane textScrollArea;
+    private JTextArea informationTextArea;
 
     // Constructor
     public GUI() {
         // Frame attributes
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setTitle("File Encryption");
-        this.setSize(500, 500);
-        this.setLayout(new FlowLayout());
+        this.setSize(800, 500);
+        this.setLayout(null);
         this.setLocationRelativeTo(null);
 
         // Open file button
         openFile = new JButton("Open File");
+        openFile.setBounds(100, 10, 100, 25);
         this.add(openFile);
 
         // Save file button
         saveFile = new JButton("Save File");
+        saveFile.setBounds(225, 10, 100, 25);
         this.add(saveFile);
 
-        // Text area
+        // Encrypt panel
+        JPanel encryptPanel = new JPanel();
+        encryptPanel.setBounds(20, 50, 400, 100);
+        encryptPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        this.add(encryptPanel);
+        // Encrypt title
+        JLabel encryptHeader = new JLabel("ENCRYPT");
+        encryptPanel.add(encryptHeader);
+
+        // Decrypt panel
+        JPanel decryptPanel = new JPanel();
+        decryptPanel.setBounds(20, 180, 400, 100);
+        decryptPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        this.add(decryptPanel);
+        // Decrypt title
+        JLabel decryptHeader = new JLabel("DECRYPT");
+        decryptPanel.add(decryptHeader);
+
+        // Text area from file
         textArea = new JTextArea();
-        //textArea.setPreferredSize(new Dimension(200, 200));
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
         this.add(textArea);
 
         // Scrolling area
         textScrollArea = new JScrollPane(textArea);
-        textScrollArea.setPreferredSize(new Dimension(300, 300));
         textScrollArea.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        textScrollArea.setBounds(450, 10, 300, 410);
         this.add(textScrollArea);
+
+        // Information area for dialog
+        informationTextArea = new JTextArea();
+        informationTextArea.setLineWrap(true);
+        informationTextArea.setWrapStyleWord(true);
+        // This is a dialog, not be edited by the user
+        informationTextArea.setEditable(false);
+        informationTextArea.setBounds(20, 300, 400, 100);
+        informationTextArea.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        informationTextArea.append("Provide the text file to encrypt or decrypt.");
+        this.add(informationTextArea);
 
         addActionListeners();
         this.setVisible(true);
