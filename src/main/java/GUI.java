@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -22,8 +23,12 @@ public class GUI extends JFrame {
     private JButton saveFile;
     private JButton encryptButton;
     private JButton decryptButton;
+    private JButton generateKeyButton;
+    private JButton loadKeyButton;
     private JTextArea textArea;
     private JTextArea informationTextArea;
+    private JTextField loadKeyTextArea;
+
 
     // Constructor
     public GUI() {
@@ -31,76 +36,130 @@ public class GUI extends JFrame {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setTitle("File Encryption");
         this.setSize(800, 500);
-        this.setLayout(new GridBagLayout());
+        this.setLayout(new GridLayout(1, 2));
         this.setLocationRelativeTo(null);
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(15, 15, 15, 15);
+
+        // ********** LEFT MAIN PANEL ***********
+
+        JPanel leftMainPanel = new JPanel();
+        leftMainPanel.setLayout(new BoxLayout(leftMainPanel, BoxLayout.Y_AXIS));
+
+        // ********** OPEN AND SAVE PANEL **********
+
+        JPanel openAndSavePanel = new JPanel();
+        openAndSavePanel.setLayout(new FlowLayout());
+        openAndSavePanel.setBorder(new EmptyBorder(10, 0, 0, 0));
 
         // Open file button
         openFile = new JButton("Open File");
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        this.add(openFile, gbc);
+        openFile.setPreferredSize(new Dimension(100, 25));
+        openAndSavePanel.add(openFile);
 
         // Save file button
         saveFile = new JButton("Save File");
-        gbc.gridx = 1;
-        gbc.gridy = 0;
-        this.add(saveFile, gbc);
+        saveFile.setPreferredSize(new Dimension(100, 25));
+        openAndSavePanel.add(saveFile);
 
-        // Encrypt panel
-        JPanel encryptPanel = new JPanel();
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        encryptPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        this.add(encryptPanel, gbc);
-        // Encrypt title
-        JLabel encryptHeader = new JLabel("ENCRYPT");
-        encryptPanel.add(encryptHeader);
+        leftMainPanel.add(openAndSavePanel);
+
+        // ********** OPEN AND SAVE PANEL **********
+
+        JPanel encryptAndDecryptPanel = new JPanel();
+        encryptAndDecryptPanel.setLayout(new FlowLayout());
 
         // Encrypt button
         encryptButton = new JButton("ENCRYPT");
-        encryptPanel.add(encryptButton);
+        encryptButton.setPreferredSize(new Dimension(100, 25));
+        encryptAndDecryptPanel.add(encryptButton);
 
-        // Decrypt panel
-        JPanel decryptPanel = new JPanel();
-        gbc.gridx = 1;
-        gbc.gridy = 1;
-        decryptPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        this.add(decryptPanel, gbc);
-        // Decrypt title
-        JLabel decryptHeader = new JLabel("DECRYPT");
-        decryptPanel.add(decryptHeader);
+        // Decrypt button
+        decryptButton = new JButton("DECRYPT");
+        decryptButton.setPreferredSize(new Dimension(100, 25));
+        encryptAndDecryptPanel.add(decryptButton);
 
-        // Text area from file
-        textArea = new JTextArea();
-        textArea.setLineWrap(true);
-        textArea.setWrapStyleWord(true);
-        this.add(textArea, gbc);
+        leftMainPanel.add(encryptAndDecryptPanel);
 
-        // Scrolling area for file text area
-        JScrollPane textScrollArea = new JScrollPane(textArea);
-        textScrollArea.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        gbc.gridx = 3;
-        gbc.gridy = 0;
-        this.add(textScrollArea, gbc);
+        // ********** KEY PANEL **********
+
+        JPanel keyPanel = new JPanel();
+        keyPanel.setLayout(new GridLayout(2, 2));
+        keyPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+
+        // Generate key button
+        generateKeyButton = new JButton("Generate Key");
+        keyPanel.add(generateKeyButton);
+
+        // Key generated text area
+        JTextField generateKeyTextArea = new JTextField();
+        keyPanel.add(generateKeyTextArea);
+
+        // Load key button
+        loadKeyButton = new JButton("Load Key");
+        keyPanel.add(loadKeyButton);
+
+        // Load key text area
+        JTextField loadKeyTextArea = new JTextField();
+        keyPanel.add(loadKeyTextArea);
+
+        leftMainPanel.add(keyPanel);
+
+        // ********** INFORMATION PANEL **********
+        JPanel informationAreaPanel = new JPanel();
+        informationAreaPanel.setLayout(new BoxLayout(informationAreaPanel, BoxLayout.Y_AXIS));
+        informationAreaPanel.setPreferredSize(new Dimension(400, 400));
+        informationAreaPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+        informationAreaPanel.setBackground(Color.LIGHT_GRAY);
+
+        // Information Label
+        JLabel informationLabel = new JLabel("INFORMATION");
+        informationLabel.setAlignmentX(CENTER_ALIGNMENT);
+        informationAreaPanel.add(informationLabel);
 
         // Information area for dialog
         informationTextArea = new JTextArea();
         informationTextArea.setLineWrap(true);
         informationTextArea.setWrapStyleWord(true);
         // This is a dialog, not be edited by the user
-        informationTextArea.setEditable(true);
+        //informationTextArea.setEditable(true);
         informationTextArea.append("Provide the text file to encrypt or decrypt.");
 
         // Information area for dialog scrollable
         JScrollPane informationAreaScroll = new JScrollPane(informationTextArea);
         informationAreaScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        informationAreaScroll.setPreferredSize(new Dimension(400, 400));
-        gbc.gridx = 0;
-        gbc.gridy = 4;
-        this.add(informationAreaScroll, gbc);
+        //informationAreaScroll.setPreferredSize(new Dimension(400, 400));
+        informationAreaPanel.add(informationAreaScroll);
 
+        leftMainPanel.add(informationAreaPanel);
+
+        this.add(leftMainPanel);
+
+        // *********** RIGHT MAIN PANEL ***********
+
+        JPanel rightMainPanel = new JPanel();
+        rightMainPanel.setLayout(new BoxLayout(rightMainPanel, BoxLayout.Y_AXIS));
+        rightMainPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+        rightMainPanel.setBackground(Color.BLACK);
+
+        // Label for text area from file
+        JLabel textAreaLabel = new JLabel("FILE DATA");
+        textAreaLabel.setAlignmentX(CENTER_ALIGNMENT);
+        textAreaLabel.setForeground(Color.WHITE);
+        rightMainPanel.add(textAreaLabel);
+
+        // Text area from file
+        textArea = new JTextArea();
+        textArea.setLineWrap(true);
+        textArea.setWrapStyleWord(true);
+        //rightMainPanel.add(textArea);
+
+        // Scrolling area for file text area
+        JScrollPane textScrollArea = new JScrollPane(textArea);
+        textScrollArea.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        //textScrollArea.setPreferredSize(new Dimension(100, 100));
+        System.out.println(rightMainPanel.getHeight());
+        rightMainPanel.add(textScrollArea);
+
+        this.add(rightMainPanel);
 
         addActionListeners();
         this.setVisible(true);
@@ -162,6 +221,39 @@ public class GUI extends JFrame {
                 }
             }
         });
+
+        //TODO
+        encryptButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Encrypt");
+            }
+        });
+
+        //TODO
+        decryptButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Decrypt");
+            }
+        });
+
+        //TODO
+        generateKeyButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Generate Key");
+            }
+        });
+
+        //TODO
+        loadKeyButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Load Key");
+            }
+        });
+
     }
 
 }

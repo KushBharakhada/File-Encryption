@@ -93,6 +93,9 @@ public class EncryptionDecryption {
     }
 
     public static void main(String[] args) {
+
+        // Does not use IV and uses ECB -> less security
+
         EncryptionDecryption test = new EncryptionDecryption();
         System.out.println("----- ORIGINAL MESSAGE -----");
         String text = "This  is a secret message!";
