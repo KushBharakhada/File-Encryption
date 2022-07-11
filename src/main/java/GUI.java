@@ -9,13 +9,20 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
+/**
+ * GUI.java
+ *
+ * @author Kush Bharakhada
+ */
+
 public class GUI extends JFrame {
 
     // Instance variables
     private JButton openFile;
     private JButton saveFile;
+    private JButton encryptButton;
+    private JButton decryptButton;
     private JTextArea textArea;
-    private JScrollPane textScrollArea;
     private JTextArea informationTextArea;
 
     // Constructor
@@ -24,33 +31,43 @@ public class GUI extends JFrame {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setTitle("File Encryption");
         this.setSize(800, 500);
-        this.setLayout(null);
+        this.setLayout(new GridBagLayout());
         this.setLocationRelativeTo(null);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(15, 15, 15, 15);
 
         // Open file button
         openFile = new JButton("Open File");
-        openFile.setBounds(100, 10, 100, 25);
-        this.add(openFile);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        this.add(openFile, gbc);
 
         // Save file button
         saveFile = new JButton("Save File");
-        saveFile.setBounds(225, 10, 100, 25);
-        this.add(saveFile);
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        this.add(saveFile, gbc);
 
         // Encrypt panel
         JPanel encryptPanel = new JPanel();
-        encryptPanel.setBounds(20, 50, 400, 100);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
         encryptPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        this.add(encryptPanel);
+        this.add(encryptPanel, gbc);
         // Encrypt title
         JLabel encryptHeader = new JLabel("ENCRYPT");
         encryptPanel.add(encryptHeader);
 
+        // Encrypt button
+        encryptButton = new JButton("ENCRYPT");
+        encryptPanel.add(encryptButton);
+
         // Decrypt panel
         JPanel decryptPanel = new JPanel();
-        decryptPanel.setBounds(20, 180, 400, 100);
+        gbc.gridx = 1;
+        gbc.gridy = 1;
         decryptPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        this.add(decryptPanel);
+        this.add(decryptPanel, gbc);
         // Decrypt title
         JLabel decryptHeader = new JLabel("DECRYPT");
         decryptPanel.add(decryptHeader);
@@ -59,24 +76,31 @@ public class GUI extends JFrame {
         textArea = new JTextArea();
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
-        this.add(textArea);
+        this.add(textArea, gbc);
 
-        // Scrolling area
-        textScrollArea = new JScrollPane(textArea);
+        // Scrolling area for file text area
+        JScrollPane textScrollArea = new JScrollPane(textArea);
         textScrollArea.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        textScrollArea.setBounds(450, 10, 300, 410);
-        this.add(textScrollArea);
+        gbc.gridx = 3;
+        gbc.gridy = 0;
+        this.add(textScrollArea, gbc);
 
         // Information area for dialog
         informationTextArea = new JTextArea();
         informationTextArea.setLineWrap(true);
         informationTextArea.setWrapStyleWord(true);
         // This is a dialog, not be edited by the user
-        informationTextArea.setEditable(false);
-        informationTextArea.setBounds(20, 300, 400, 100);
-        informationTextArea.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        informationTextArea.setEditable(true);
         informationTextArea.append("Provide the text file to encrypt or decrypt.");
-        this.add(informationTextArea);
+
+        // Information area for dialog scrollable
+        JScrollPane informationAreaScroll = new JScrollPane(informationTextArea);
+        informationAreaScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        informationAreaScroll.setPreferredSize(new Dimension(400, 400));
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        this.add(informationAreaScroll, gbc);
+
 
         addActionListeners();
         this.setVisible(true);
@@ -139,85 +163,6 @@ public class GUI extends JFrame {
             }
         });
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /*
-    @Override
-    public void actionPerformed(ActionEvent e) {
-
-        // Action for open file
-        if (e.getSource() == openFile) {
-            JFileChooser fileChoice = new JFileChooser();
-            FileNameExtensionFilter filter = new FileNameExtensionFilter("Text File", "txt");
-            fileChoice.setFileFilter(filter);
-
-            // Check open has been clicked
-            int explorerButton = fileChoice.showOpenDialog(null);
-            Scanner readFromFile = null;
-
-            if (explorerButton == JFileChooser.APPROVE_OPTION) {
-                File file = new File(fileChoice.getSelectedFile().getAbsolutePath());
-                try {
-                    readFromFile = new Scanner(file);
-                    if (file.isFile()) {
-                        String data = "";
-                        while (readFromFile.hasNextLine()) {
-                            data += readFromFile.nextLine() + "\n";
-                        }
-                        textArea.append(data);
-                    }
-                }
-                catch(FileNotFoundException fileNotFoundException) {
-                    fileNotFoundException.printStackTrace();
-                }
-                finally {
-                    readFromFile.close();
-                }
-            }
-
-        }
-
-
-        // Action for save file
-        if (e.getSource() == saveFile) {
-
-            JFileChooser fileChoice = new JFileChooser();
-            // Check save has been clicked
-            int explorerButton = fileChoice.showSaveDialog(null);
-
-            if (explorerButton == JFileChooser.APPROVE_OPTION) {
-                File file = new File(fileChoice.getSelectedFile().getAbsolutePath());
-                try {
-                    // Write the text area to the file
-                    FileWriter writeToFile = new FileWriter(file);
-                    writeToFile.write(textArea.getText());
-                    writeToFile.close();
-                }
-                catch (IOException ioException) {
-                    ioException.printStackTrace();
-                }
-            }
-
-        }
-
-    }
-    */
-
 
 }
 
