@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Date;
 import java.util.Scanner;
 
 /**
@@ -25,7 +26,7 @@ public class GUI extends JFrame {
     private JButton decryptButton;
     private JButton generateKeyButton;
     private JTextArea textArea;
-    private JTextArea informationTextArea;
+    private static JTextArea informationTextArea;
     private JTextField generateKeyTextArea;
     private JTextField loadKeyTextArea;
     private EncryptionDecryption encryptionDecryption;
@@ -131,7 +132,6 @@ public class GUI extends JFrame {
         informationTextArea.setWrapStyleWord(true);
         // This is a dialog, not be edited by the user
         informationTextArea.setEditable(false);
-        informationTextArea.append("Provide the text file to encrypt or decrypt.");
 
         // Information area for dialog scrollable
         JScrollPane informationAreaScroll = new JScrollPane(informationTextArea);
@@ -172,6 +172,12 @@ public class GUI extends JFrame {
         this.setVisible(true);
     }
 
+    public static void appendInformationMessage(String message) {
+        Date date = new Date();
+        // Display message with date and time
+        informationTextArea.append("> " + date + ":\n" + message + "\n----------\n");
+    }
+
     public void addActionListeners() {
 
         openFile.addActionListener(new ActionListener() {
@@ -187,6 +193,7 @@ public class GUI extends JFrame {
 
                 if (explorerButton == JFileChooser.APPROVE_OPTION) {
                     File file = new File(fileChoice.getSelectedFile().getAbsolutePath());
+
                     try {
                         readFromFile = new Scanner(file);
                         if (file.isFile()) {
@@ -194,15 +201,19 @@ public class GUI extends JFrame {
                             while (readFromFile.hasNextLine()) {
                                 data += readFromFile.nextLine() + "\n";
                             }
-                            textArea.append(data);
+                            textArea.setText(data);
+                            appendInformationMessage("Data has been loaded.");
                         }
                     }
                     catch(FileNotFoundException fileNotFoundException) {
-                        fileNotFoundException.printStackTrace();
+                        appendInformationMessage("Error during opening file, try again or restart the application.");
                     }
                     finally {
                         readFromFile.close();
                     }
+                }
+                else {
+                    appendInformationMessage("Cancelled file opening.");
                 }
             }
         });
@@ -215,47 +226,67 @@ public class GUI extends JFrame {
                 int explorerButton = fileChoice.showSaveDialog(null);
 
                 if (explorerButton == JFileChooser.APPROVE_OPTION) {
-                    File file = new File(fileChoice.getSelectedFile().getAbsolutePath());
+                    // Make sure user saves the file as a .txt extension
+                    String filename = fileChoice.getSelectedFile().getAbsolutePath();
+                    if (!filename.endsWith(".txt"))
+                        filename += ".txt";
+
+                    File file = new File(filename);
+
                     try {
                         // Write the text area to the file
                         FileWriter writeToFile = new FileWriter(file);
                         writeToFile.write(textArea.getText());
                         writeToFile.close();
+                        appendInformationMessage("File has been successfully saved.");
                     }
                     catch (IOException ioException) {
-                        ioException.printStackTrace();
+                        appendInformationMessage("An error has occurred during saving, try again or restart the application.");
                     }
+                }
+                else {
+                    appendInformationMessage("Saving the file has been cancelled.");
                 }
             }
         });
 
-        //TODO
         encryptButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Input key from the user
                 String userInputKey = loadKeyTextArea.getText();
-                // Encrypt the text and convert the string key to a key object
-                String encryptedText = encryptionDecryption.encrypt(textArea.getText(),
-                        EncryptionDecryption.stringToKey(userInputKey));
-                textArea.setText(encryptedText);
+
+                try {
+                    // Encrypt the text and convert the string key to a key object for paramter
+                    String encryptedText = encryptionDecryption.encrypt(textArea.getText(),
+                            EncryptionDecryption.stringToKey(userInputKey));
+                    textArea.setText(encryptedText);
+                }
+                catch (IllegalArgumentException illegalArgumentException) {
+                    appendInformationMessage("An appropriate key has not been provided to the load key.");
+                }
+
             }
         });
 
-        //TODO
         decryptButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Input key from the user
                 String userInputKey = loadKeyTextArea.getText();
-                // Decrypt the text and convert the string key to a key object
-                String decryptedText = encryptionDecryption.decrypt(textArea.getText(),
-                        EncryptionDecryption.stringToKey(userInputKey));
-                textArea.setText(decryptedText);
+
+                try {
+                    // Decrypt the text and convert the string key to a key object for parameter
+                    String decryptedText = encryptionDecryption.decrypt(textArea.getText(),
+                            EncryptionDecryption.stringToKey(userInputKey));
+                    textArea.setText(decryptedText);
+                }
+                catch (IllegalArgumentException illegalArgumentException) {
+                    appendInformationMessage("An appropriate key has not been provided to the load key.");
+                }
             }
         });
 
-        //TODO
         generateKeyButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -268,5 +299,3 @@ public class GUI extends JFrame {
     }
 
 }
-
-

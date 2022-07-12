@@ -23,11 +23,11 @@ public class FormattingAndConversion {
 
     public static String encodeData(byte[] data) {
         // Convert binary/byte data into text format
-        return Base64.getEncoder().encodeToString(data);
+        return Base64.getMimeEncoder().encodeToString(data);
     }
 
     public static byte[] decodeData(String data) {
-        return Base64.getDecoder().decode(data);
+        return Base64.getMimeDecoder().decode(data);
     }
 
     public static String addEncryptionTag(String data) {

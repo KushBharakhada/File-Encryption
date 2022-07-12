@@ -24,9 +24,13 @@ public class EncryptionDecryption {
             // Create a 128 bit key using the random number
             keyGenerator.init(128, secureRandom);
             key = keyGenerator.generateKey();
+            GUI.appendInformationMessage("A key has been generated. If you use this key to encrypt, ONLY this" +
+                    " key again can be used to decrypt the message. Losing this key can lead to losing access to" +
+                    " the message.");
         }
         catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            GUI.appendInformationMessage("An error has occurred in key creation. Try generating" +
+                    " a new key or restart the application.");
         }
 
         return key;
@@ -48,17 +52,20 @@ public class EncryptionDecryption {
                 // Add a tag to show the data is encrypted
                 String dataWithTag = FormattingAndConversion.addEncryptionTag(encodeData);
 
+                GUI.appendInformationMessage("Data has been encrypted.");
                 return dataWithTag;
             }
             else {
-                System.out.println("Data is already encrypted!");
-                return data;
+                GUI.appendInformationMessage("This data is already encrypted and cannot be encrypted again.");
+                //return data;
             }
         }
         catch (Exception e) {
-            e.printStackTrace();
-            return data;
+            GUI.appendInformationMessage("An error has occurred during encryption." +
+                    " Retry encryption or restart the application.");
+            //return data;
         }
+        return data;
     }
 
     public String decrypt(String encryptedData, SecretKey key) {
@@ -75,19 +82,21 @@ public class EncryptionDecryption {
                 byte[] encryptedDataBytes = FormattingAndConversion.decodeData(tagRemovedData);
                 byte[] decryptedDataBytes = cipher.doFinal(encryptedDataBytes);
 
+                GUI.appendInformationMessage("Data has been decrypted.");
                 // Decrypted message
                 return new String(decryptedDataBytes);
             }
             else {
-                System.out.println("Data is already decrypted!");
-                return encryptedData;
+                GUI.appendInformationMessage("This data is already decrypted and cannot be decrypted again.");
             }
         }
         catch (BadPaddingException keyException) {
-            System.out.println("Not a valid Key!");
+            GUI.appendInformationMessage("Unable to decrypt the data with the given key.");
         }
         catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(); // REMOVE THIS STATEMENT
+            GUI.appendInformationMessage("An error has occurred during decryption." +
+                    " Retry decryption or restart the application.");
         }
         // Return the input data if data could not be decrypted
         return encryptedData;
@@ -124,5 +133,6 @@ public class EncryptionDecryption {
 
     }
 
-
 }
+
+// Decryption when opening file not working
