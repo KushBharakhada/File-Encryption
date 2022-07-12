@@ -1,4 +1,5 @@
 import javax.crypto.*;
+import javax.crypto.spec.SecretKeySpec;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
@@ -92,6 +93,13 @@ public class EncryptionDecryption {
         return encryptedData;
     }
 
+    public static SecretKey stringToKey(String key) {
+        // Converting a key in text to a key object
+        byte[] decodedKey = FormattingAndConversion.decodeData(key);
+        SecretKey keyObj = new SecretKeySpec(decodedKey, 0, decodedKey.length, ENCRYPTION_TYPE);
+        return keyObj;
+    }
+
     public static void main(String[] args) {
 
         // Does not use IV and uses ECB -> less security
@@ -108,11 +116,11 @@ public class EncryptionDecryption {
         System.out.println("The Symmetric Key is: " + testKey);
 
         System.out.println("----- ENCRYPTED -----");
-        String encrypted = test.encrypt(text, key);
+        String encrypted = test.encrypt(text, stringToKey(testKey));
         System.out.println(encrypted);
 
         System.out.println("----- DECRYPTED -----");
-        System.out.println(test.decrypt(encrypted, key));
+        System.out.println(test.decrypt(encrypted, stringToKey(testKey)));
 
     }
 

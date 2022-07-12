@@ -24,20 +24,19 @@ public class GUI extends JFrame {
     private JButton encryptButton;
     private JButton decryptButton;
     private JButton generateKeyButton;
-    private JButton loadKeyButton;
     private JTextArea textArea;
     private JTextArea informationTextArea;
+    private JTextField generateKeyTextArea;
     private JTextField loadKeyTextArea;
-
+    private EncryptionDecryption encryptionDecryption;
 
     // Constructor
     public GUI() {
         // Frame attributes
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setTitle("File Encryption");
-        this.setSize(800, 500);
         this.setLayout(new GridLayout(1, 2));
-        this.setLocationRelativeTo(null);
+        encryptionDecryption = new EncryptionDecryption();
 
         // ********** LEFT MAIN PANEL ***********
 
@@ -90,16 +89,28 @@ public class GUI extends JFrame {
         keyPanel.add(generateKeyButton);
 
         // Key generated text area
-        JTextField generateKeyTextArea = new JTextField();
-        keyPanel.add(generateKeyTextArea);
+        generateKeyTextArea = new JTextField();
+        generateKeyTextArea.setEditable(false);
 
-        // Load key button
-        loadKeyButton = new JButton("Load Key");
-        keyPanel.add(loadKeyButton);
+        // Scrolling area for generated key
+        JScrollPane generatedKeyTextScrollArea = new JScrollPane(generateKeyTextArea);
+        generatedKeyTextScrollArea.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        keyPanel.add(generatedKeyTextScrollArea);
+
+        // Load key label
+        JLabel loadKeyLabel = new JLabel("Load Key: ");
+        // Center align the label
+        loadKeyLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        keyPanel.add(loadKeyLabel);
 
         // Load key text area
-        JTextField loadKeyTextArea = new JTextField();
-        keyPanel.add(loadKeyTextArea);
+        loadKeyTextArea = new JTextField();
+        //keyPanel.add(loadKeyTextArea);
+
+        // Scrolling area for generated key
+        JScrollPane loadKeyTextScrollArea = new JScrollPane(loadKeyTextArea);
+        loadKeyTextScrollArea.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        keyPanel.add(loadKeyTextScrollArea);
 
         leftMainPanel.add(keyPanel);
 
@@ -108,7 +119,6 @@ public class GUI extends JFrame {
         informationAreaPanel.setLayout(new BoxLayout(informationAreaPanel, BoxLayout.Y_AXIS));
         informationAreaPanel.setPreferredSize(new Dimension(400, 400));
         informationAreaPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-        informationAreaPanel.setBackground(Color.LIGHT_GRAY);
 
         // Information Label
         JLabel informationLabel = new JLabel("INFORMATION");
@@ -120,13 +130,12 @@ public class GUI extends JFrame {
         informationTextArea.setLineWrap(true);
         informationTextArea.setWrapStyleWord(true);
         // This is a dialog, not be edited by the user
-        //informationTextArea.setEditable(true);
+        informationTextArea.setEditable(false);
         informationTextArea.append("Provide the text file to encrypt or decrypt.");
 
         // Information area for dialog scrollable
         JScrollPane informationAreaScroll = new JScrollPane(informationTextArea);
         informationAreaScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        //informationAreaScroll.setPreferredSize(new Dimension(400, 400));
         informationAreaPanel.add(informationAreaScroll);
 
         leftMainPanel.add(informationAreaPanel);
@@ -150,18 +159,16 @@ public class GUI extends JFrame {
         textArea = new JTextArea();
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
-        //rightMainPanel.add(textArea);
 
         // Scrolling area for file text area
         JScrollPane textScrollArea = new JScrollPane(textArea);
         textScrollArea.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        //textScrollArea.setPreferredSize(new Dimension(100, 100));
-        System.out.println(rightMainPanel.getHeight());
         rightMainPanel.add(textScrollArea);
 
         this.add(rightMainPanel);
 
         addActionListeners();
+        this.pack();
         this.setVisible(true);
     }
 
@@ -226,7 +233,12 @@ public class GUI extends JFrame {
         encryptButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Encrypt");
+                // Input key from the user
+                String userInputKey = loadKeyTextArea.getText();
+                // Encrypt the text and convert the string key to a key object
+                String encryptedText = encryptionDecryption.encrypt(textArea.getText(),
+                        EncryptionDecryption.stringToKey(userInputKey));
+                textArea.setText(encryptedText);
             }
         });
 
@@ -234,7 +246,12 @@ public class GUI extends JFrame {
         decryptButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Decrypt");
+                // Input key from the user
+                String userInputKey = loadKeyTextArea.getText();
+                // Decrypt the text and convert the string key to a key object
+                String decryptedText = encryptionDecryption.decrypt(textArea.getText(),
+                        EncryptionDecryption.stringToKey(userInputKey));
+                textArea.setText(decryptedText);
             }
         });
 
@@ -242,15 +259,9 @@ public class GUI extends JFrame {
         generateKeyButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Generate Key");
-            }
-        });
-
-        //TODO
-        loadKeyButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("Load Key");
+                // Create a key and display in text box
+                String key = FormattingAndConversion.byteToHex(EncryptionDecryption.createKey().getEncoded());
+                generateKeyTextArea.setText(key);
             }
         });
 
