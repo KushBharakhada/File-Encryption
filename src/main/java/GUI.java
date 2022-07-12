@@ -1,6 +1,7 @@
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.text.DefaultCaret;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -70,11 +71,13 @@ public class GUI extends JFrame {
         // Encrypt button
         encryptButton = new JButton("ENCRYPT");
         encryptButton.setPreferredSize(new Dimension(100, 25));
+        encryptButton.setBackground(Color.RED);
         encryptAndDecryptPanel.add(encryptButton);
 
         // Decrypt button
         decryptButton = new JButton("DECRYPT");
         decryptButton.setPreferredSize(new Dimension(100, 25));
+        decryptButton.setBackground(Color.GREEN);
         encryptAndDecryptPanel.add(decryptButton);
 
         leftMainPanel.add(encryptAndDecryptPanel);
@@ -132,6 +135,13 @@ public class GUI extends JFrame {
         informationTextArea.setWrapStyleWord(true);
         // This is a dialog, not be edited by the user
         informationTextArea.setEditable(false);
+        informationTextArea.setBackground(new Color(1, 36, 86));
+        informationTextArea.setForeground(Color.WHITE);
+        informationTextArea.setBorder(new EmptyBorder(10, 10, 10, 10));
+
+        // Automatically scroll informationTextArea as text appends
+        DefaultCaret caret = (DefaultCaret)informationTextArea.getCaret();
+        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 
         // Information area for dialog scrollable
         JScrollPane informationAreaScroll = new JScrollPane(informationTextArea);
@@ -147,7 +157,7 @@ public class GUI extends JFrame {
         JPanel rightMainPanel = new JPanel();
         rightMainPanel.setLayout(new BoxLayout(rightMainPanel, BoxLayout.Y_AXIS));
         rightMainPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-        rightMainPanel.setBackground(Color.BLACK);
+        rightMainPanel.setBackground(new Color(1, 36, 86));
 
         // Label for text area from file
         JLabel textAreaLabel = new JLabel("FILE DATA");
@@ -159,6 +169,7 @@ public class GUI extends JFrame {
         textArea = new JTextArea();
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
+        textArea.setBorder(new EmptyBorder(10, 10, 10, 10));
 
         // Scrolling area for file text area
         JScrollPane textScrollArea = new JScrollPane(textArea);

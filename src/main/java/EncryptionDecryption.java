@@ -57,13 +57,11 @@ public class EncryptionDecryption {
             }
             else {
                 GUI.appendInformationMessage("This data is already encrypted and cannot be encrypted again.");
-                //return data;
             }
         }
         catch (Exception e) {
             GUI.appendInformationMessage("An error has occurred during encryption." +
                     " Retry encryption or restart the application.");
-            //return data;
         }
         return data;
     }
@@ -94,7 +92,6 @@ public class EncryptionDecryption {
             GUI.appendInformationMessage("Unable to decrypt the data with the given key.");
         }
         catch (Exception e) {
-            e.printStackTrace(); // REMOVE THIS STATEMENT
             GUI.appendInformationMessage("An error has occurred during decryption." +
                     " Retry decryption or restart the application.");
         }
@@ -109,30 +106,4 @@ public class EncryptionDecryption {
         return keyObj;
     }
 
-    public static void main(String[] args) {
-
-        // Does not use IV and uses ECB -> less security
-
-        EncryptionDecryption test = new EncryptionDecryption();
-        System.out.println("----- ORIGINAL MESSAGE -----");
-        String text = "This  is a secret message!";
-        System.out.println(text);
-
-        SecretKey key = createKey();
-
-        System.out.println("----- SECRET KEY -----");
-        String testKey = "7500C921EF830D9F22AEEF2BB0603F9E";
-        System.out.println("The Symmetric Key is: " + testKey);
-
-        System.out.println("----- ENCRYPTED -----");
-        String encrypted = test.encrypt(text, stringToKey(testKey));
-        System.out.println(encrypted);
-
-        System.out.println("----- DECRYPTED -----");
-        System.out.println(test.decrypt(encrypted, stringToKey(testKey)));
-
-    }
-
 }
-
-// Decryption when opening file not working
