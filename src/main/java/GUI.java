@@ -15,6 +15,13 @@ import java.util.Scanner;
 /**
  * GUI.java
  *
+ * Implements the GUI for the application. This class provides 'Open File'
+ * where the user must select a .txt extension file (a filter is provided). A 'Save File'
+ * where the user wants to save the encrypted or decrypted file (must be saved as a .txt extension,
+ * missing this extension will be appended by default). 'Generate Key' is used if a user needs a key
+ * and 'Load Key' is the key required to encrypt or decrypt. 'FILE DATA' will present the contents
+ * of the file and 'INFORMATION' will present a log of the processes the user has carried out.
+ *
  * @author Kush Bharakhada
  */
 
@@ -190,11 +197,12 @@ public class GUI extends JFrame {
     }
 
     public void addActionListeners() {
-
+        // Open File Listener
         openFile.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JFileChooser fileChoice = new JFileChooser();
+                // .txt extension filter in file browser
                 FileNameExtensionFilter filter = new FileNameExtensionFilter("Text File", "txt");
                 fileChoice.setFileFilter(filter);
 
@@ -204,14 +212,15 @@ public class GUI extends JFrame {
 
                 if (explorerButton == JFileChooser.APPROVE_OPTION) {
                     File file = new File(fileChoice.getSelectedFile().getAbsolutePath());
-
                     try {
                         readFromFile = new Scanner(file);
                         if (file.isFile()) {
                             String data = "";
+                            // Read file line by line
                             while (readFromFile.hasNextLine()) {
                                 data += readFromFile.nextLine() + "\n";
                             }
+                            // File content shown to GUI
                             textArea.setText(data);
                             appendInformationMessage("Data has been loaded.");
                         }
@@ -229,6 +238,7 @@ public class GUI extends JFrame {
             }
         });
 
+        // Save File listener
         saveFile.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -261,6 +271,7 @@ public class GUI extends JFrame {
             }
         });
 
+        // Encrypt button listener
         encryptButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -268,7 +279,7 @@ public class GUI extends JFrame {
                 String userInputKey = loadKeyTextArea.getText();
 
                 try {
-                    // Encrypt the text and convert the string key to a key object for paramter
+                    // Convert the string key to a key object for the parameter and encrypt the text
                     String encryptedText = encryptionDecryption.encrypt(textArea.getText(),
                             EncryptionDecryption.stringToKey(userInputKey));
                     textArea.setText(encryptedText);
@@ -280,6 +291,7 @@ public class GUI extends JFrame {
             }
         });
 
+        // Decrypt button listener
         decryptButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -287,7 +299,7 @@ public class GUI extends JFrame {
                 String userInputKey = loadKeyTextArea.getText();
 
                 try {
-                    // Decrypt the text and convert the string key to a key object for parameter
+                    // Convert the string key to a key object for parameter and decrypt the text
                     String decryptedText = encryptionDecryption.decrypt(textArea.getText(),
                             EncryptionDecryption.stringToKey(userInputKey));
                     textArea.setText(decryptedText);
@@ -298,6 +310,7 @@ public class GUI extends JFrame {
             }
         });
 
+        // Generate key button listener
         generateKeyButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

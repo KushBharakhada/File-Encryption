@@ -11,6 +11,7 @@ import java.security.SecureRandom;
 
 public class EncryptionDecryption {
 
+    // Instance variables
     private final static String ENCRYPTION_TYPE = "AES";
     private final String TRANSFORMATION = "AES/ECB/PKCS5Padding";
 
@@ -32,19 +33,18 @@ public class EncryptionDecryption {
             GUI.appendInformationMessage("An error has occurred in key creation. Try generating" +
                     " a new key or restart the application.");
         }
-
         return key;
     }
 
     public String encrypt(String data, SecretKey key) {
         try {
             if (!FormattingAndConversion.isDataEncrypted(data)) {
-                // Using AES encryption in Electronic Code Book mode with padding scheme PKCS5
+                // Uses AES encryption in Electronic Code Book mode with padding scheme PKCS5
                 // Initialising encryption cipher
                 Cipher cipher = Cipher.getInstance(TRANSFORMATION);
                 cipher.init(Cipher.ENCRYPT_MODE, key);
 
-                // Retrieve the data in bytes
+                // Retrieve the data in bytes and encrypt the data
                 byte[] dataInBytes = data.getBytes();
                 byte[] encryptedDataBytes = cipher.doFinal(dataInBytes);
 
@@ -60,9 +60,11 @@ public class EncryptionDecryption {
             }
         }
         catch (Exception e) {
+            e.printStackTrace();
             GUI.appendInformationMessage("An error has occurred during encryption." +
                     " Retry encryption or restart the application.");
         }
+        // Keeps the data unchanged otherwise if encryption process failed
         return data;
     }
 
@@ -81,7 +83,7 @@ public class EncryptionDecryption {
                 byte[] decryptedDataBytes = cipher.doFinal(encryptedDataBytes);
 
                 GUI.appendInformationMessage("Data has been decrypted.");
-                // Decrypted message
+                // Retrieve the original message and return it
                 return new String(decryptedDataBytes);
             }
             else {

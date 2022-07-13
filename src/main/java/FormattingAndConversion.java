@@ -3,15 +3,21 @@ import java.util.Base64;
 /**
  * FormattingAndConversion.java
  *
+ * Provides conversions required for the encryption and decryption process.
+ * Formats/modifies the encrypted data to see whether the data is already
+ * encrypted or decrypted (to avoid allowing multiple encryption/decryption on a single file).
+ *
  * @author Kush Bharakhada
  */
 
 public class FormattingAndConversion {
 
+    // This tag signifies if data is already encrypted/decrypted
+    // Appended to the start of the encrypted data and removed before decryption
     private static final String TAG = ":encrypted";
 
     public static String byteToHex(byte[] byteArray) {
-        // Empty string initialisation
+        // Empty string at initialisation
         String hexString = "";
 
         // Iterate through each byte
