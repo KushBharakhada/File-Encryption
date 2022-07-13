@@ -316,7 +316,7 @@ public class GUIPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Create a key and display in text box
-                String key = FormattingAndConversion.byteToHex(EncryptionDecryption.createKey().getEncoded());
+                String key = FormattingAndConversion.bytesToHex(EncryptionDecryption.createKey().getEncoded());
                 generateKeyTextArea.setText(key);
             }
         });

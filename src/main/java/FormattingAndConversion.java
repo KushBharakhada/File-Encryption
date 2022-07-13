@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.Base64;
 
 /**
@@ -16,7 +17,7 @@ public class FormattingAndConversion {
     // Appended to the start of the encrypted data and removed before decryption
     private static final String TAG = ":encrypted";
 
-    public static String byteToHex(byte[] byteArray) {
+    public static String bytesToHex(byte[] byteArray) {
         // Empty string at initialisation
         String hexString = "";
 
@@ -27,23 +28,35 @@ public class FormattingAndConversion {
         return hexString;
     }
 
-    public static String encodeData(byte[] data) {
-        // Convert binary/byte data into text format
-        return Base64.getMimeEncoder().encodeToString(data);
+    public static byte[] hexToBytes(String hexadecimals) {
+        // Pairs of hex create a byte so array length is halved
+        byte[] bytesArray = new byte[hexadecimals.length() / 2];
+
+        for (int i = 0; i < bytesArray.length; i++) {
+            int index = i * 2;
+            int value = Integer.parseInt(hexadecimals.substring(index, index + 2), 16);
+            bytesArray[i] = (byte)value;
+        }
+        return bytesArray;
     }
 
-    public static byte[] decodeData(String data) {
-        return Base64.getMimeDecoder().decode(data);
+    public static String encodeData(byte[] message) {
+        // Convert binary/byte data into text format
+        return Base64.getMimeEncoder().encodeToString(message);
+    }
+
+    public static byte[] decodeData(String message) {
+        return Base64.getMimeDecoder().decode(message);
     }
 
     public static String addEncryptionTag(String data) {
-        // Add a tag at the start of the data
-        return TAG + data;
+        // Add a tag at the end of the data
+        return data + TAG;
     }
 
     public static String removeEncryptionTag(String data) {
         // Remove the tag from the start of the data
-        return data.substring(TAG.length(), data.length());
+        return data.substring(0, data.length() - TAG.length());
     }
 
     public static boolean isDataEncrypted(String data) {
@@ -51,6 +64,25 @@ public class FormattingAndConversion {
         if (data.indexOf(TAG) != -1)
             return true;
         return false;
+    }
+
+    public static byte[] concatBytes(byte[] arrayA, byte[] arrayB) {
+        byte[] bothArrays = new byte[arrayA.length + arrayB.length];
+        System.arraycopy(arrayA, 0, bothArrays, 0, arrayA.length);
+        System.arraycopy(arrayB, 0, bothArrays, arrayA.length, arrayB.length);
+        return bothArrays;
+    }
+
+    public static byte[] getIVBytes(byte[] message) {
+        // First 16 bytes is the IV
+        byte[] ivBytes = Arrays.copyOfRange(message, 0, 16);
+        return ivBytes;
+    }
+
+    public static byte[] getDataBytes(byte[] message) {
+        // After the first 16 bytes starts the data
+        byte[] data = Arrays.copyOfRange(message, 16, message.length);
+        return data;
     }
 
 }

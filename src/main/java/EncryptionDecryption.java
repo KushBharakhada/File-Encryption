@@ -1,4 +1,5 @@
 import javax.crypto.*;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -13,7 +14,7 @@ public class EncryptionDecryption {
 
     // Instance variables
     private final static String ENCRYPTION_TYPE = "AES";
-    private final String TRANSFORMATION = "AES/ECB/PKCS5Padding";
+    private final String TRANSFORMATION = "AES/CBC/PKCS5Padding";
 
     public static SecretKey createKey() {
         SecretKey key = null;
@@ -22,8 +23,8 @@ public class EncryptionDecryption {
             // Generate a strong random number
             SecureRandom secureRandom = new SecureRandom();
             KeyGenerator keyGenerator = KeyGenerator.getInstance(ENCRYPTION_TYPE);
-            // Create a 128 bit key using the random number
-            keyGenerator.init(128, secureRandom);
+            // Create a 256 bit key using the random number
+            keyGenerator.init(256, secureRandom);
             key = keyGenerator.generateKey();
             GUIPanel.appendInformationMessage("A key has been generated. If you use this key to encrypt, ONLY this" +
                     " key again can be used to decrypt the message. Losing this key can lead to losing access to" +
@@ -36,21 +37,39 @@ public class EncryptionDecryption {
         return key;
     }
 
+    public byte[] createIV() {
+        // Initialize the byte array
+        final int DEFAULT_BLOCK_SIZE = 128;
+        final int BITS_TO_BYTES = 8;
+        byte[] iv = new byte[DEFAULT_BLOCK_SIZE / BITS_TO_BYTES];
+
+        SecureRandom secureRandom = new SecureRandom();
+        // Fill it with random bytes
+        secureRandom.nextBytes(iv);
+        return iv;
+    }
+
     public String encrypt(String data, SecretKey key) {
         try {
             if (!FormattingAndConversion.isDataEncrypted(data)) {
-                // Uses AES encryption in Electronic Code Book mode with padding scheme PKCS5
-                // Initialising encryption cipher
                 Cipher cipher = Cipher.getInstance(TRANSFORMATION);
-                cipher.init(Cipher.ENCRYPT_MODE, key);
+
+                // Creating an initialisation vector
+                byte[] iv = createIV();
+                // Specifying the initialisation vector
+                IvParameterSpec ivPSpec = new IvParameterSpec(iv);
+                // Initialising encryption cipher
+                cipher.init(Cipher.ENCRYPT_MODE, key, ivPSpec);
 
                 // Retrieve the data in bytes and encrypt the data
                 byte[] dataInBytes = data.getBytes();
                 byte[] encryptedDataBytes = cipher.doFinal(dataInBytes);
 
-                String encodeData = FormattingAndConversion.encodeData(encryptedDataBytes);
+                // Append the IV bytes to the start of the encrypted data bytes array
+                byte[] encryptedDataAndIVBytes = FormattingAndConversion.concatBytes(cipher.getIV(),encryptedDataBytes);
+                String encodeAll = FormattingAndConversion.encodeData(encryptedDataAndIVBytes);
                 // Add a tag to show the data is encrypted
-                String dataWithTag = FormattingAndConversion.addEncryptionTag(encodeData);
+                String dataWithTag = FormattingAndConversion.addEncryptionTag(encodeAll);
 
                 GUIPanel.appendInformationMessage("Data has been encrypted.");
                 return dataWithTag;
@@ -60,7 +79,6 @@ public class EncryptionDecryption {
             }
         }
         catch (Exception e) {
-            e.printStackTrace();
             GUIPanel.appendInformationMessage("An error has occurred during encryption." +
                     " Retry encryption or restart the application.");
         }
@@ -74,12 +92,20 @@ public class EncryptionDecryption {
                 // Remove the tag so the message can be decrypted
                 String tagRemovedData = FormattingAndConversion.removeEncryptionTag(encryptedData);
 
-                // Initialising decryption cipher
                 Cipher cipher = Cipher.getInstance(TRANSFORMATION);
-                cipher.init(Cipher.DECRYPT_MODE, key);
 
                 // Decode and decrypt the data
-                byte[] encryptedDataBytes = FormattingAndConversion.decodeData(tagRemovedData);
+                byte[] encryptedMessageBytes = FormattingAndConversion.decodeData(tagRemovedData);
+
+                // Split the bytes into the IV and Data
+                byte[] iv = FormattingAndConversion.getIVBytes(encryptedMessageBytes);
+                byte[] encryptedDataBytes = FormattingAndConversion.getDataBytes(encryptedMessageBytes);
+
+                // Specifying the initialisation vector
+                IvParameterSpec ivPSpec = new IvParameterSpec(iv);
+                // Initialising decryption cipher
+                cipher.init(Cipher.DECRYPT_MODE, key, ivPSpec);
+
                 byte[] decryptedDataBytes = cipher.doFinal(encryptedDataBytes);
 
                 GUIPanel.appendInformationMessage("Data has been decrypted.");
@@ -102,9 +128,9 @@ public class EncryptionDecryption {
     }
 
     public static SecretKey stringToKey(String key) {
-        // Converting a key in text to a key object
-        byte[] decodedKey = FormattingAndConversion.decodeData(key);
-        SecretKey keyObj = new SecretKeySpec(decodedKey, 0, decodedKey.length, ENCRYPTION_TYPE);
+        byte[] keyInByteFormat = FormattingAndConversion.hexToBytes(key);
+        // Converting the key to a key object
+        SecretKey keyObj = new SecretKeySpec(keyInByteFormat, 0, keyInByteFormat.length, ENCRYPTION_TYPE);
         return keyObj;
     }
 
