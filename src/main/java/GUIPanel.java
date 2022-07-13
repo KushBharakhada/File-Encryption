@@ -13,9 +13,9 @@ import java.util.Date;
 import java.util.Scanner;
 
 /**
- * GUI.java
+ * GUIPanel.java
  *
- * Implements the GUI for the application. This class provides 'Open File'
+ * Implements the GUI for the application. The GUI provides 'Open File'
  * where the user must select a .txt extension file (a filter is provided). A 'Save File'
  * where the user wants to save the encrypted or decrypted file (must be saved as a .txt extension,
  * missing this extension will be appended by default). 'Generate Key' is used if a user needs a key
@@ -25,11 +25,11 @@ import java.util.Scanner;
  * @author Kush Bharakhada
  */
 
-public class GUI extends JFrame {
+public class GUIPanel extends JPanel {
 
     // Instance variables
-    private JButton openFile;
-    private JButton saveFile;
+    private JButton openFileButton;
+    private JButton saveFileButton;
     private JButton encryptButton;
     private JButton decryptButton;
     private JButton generateKeyButton;
@@ -39,58 +39,86 @@ public class GUI extends JFrame {
     private JTextField loadKeyTextArea;
     private EncryptionDecryption encryptionDecryption;
 
-    // Constructor
-    public GUI() {
-        // Frame attributes
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setTitle("File Encryption");
-        this.setLayout(new GridLayout(1, 2));
+    public GUIPanel() {
         encryptionDecryption = new EncryptionDecryption();
+        this.setLayout(new GridLayout(1, 2));
+        this.add(leftMainPanel());
+        this.add(rightMainPanel());
+        this.addActionListeners();
+    }
 
-        // ********** LEFT MAIN PANEL ***********
+    private JPanel leftMainPanel() {
+        JPanel leftPanel = new JPanel();
+        leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
 
-        JPanel leftMainPanel = new JPanel();
-        leftMainPanel.setLayout(new BoxLayout(leftMainPanel, BoxLayout.Y_AXIS));
+        leftPanel.add(openAndSavePanel());
+        leftPanel.add(encryptAndDecryptPanel());
+        leftPanel.add(loadAndGenerateKeyPanel());
+        leftPanel.add(informationPanel());
 
-        // ********** OPEN AND SAVE PANEL **********
+        return leftPanel;
+    }
 
-        JPanel openAndSavePanel = new JPanel();
-        openAndSavePanel.setLayout(new FlowLayout());
-        openAndSavePanel.setBorder(new EmptyBorder(10, 0, 0, 0));
+    private JPanel rightMainPanel() {
+        JPanel rightPanel = new JPanel();
+        rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
+        rightPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+        rightPanel.setBackground(new Color(1, 36, 86));
+
+        // Label for text area from file
+        JLabel textAreaLabel = new JLabel("FILE DATA");
+        textAreaLabel.setAlignmentX(CENTER_ALIGNMENT);
+        textAreaLabel.setForeground(Color.WHITE);
+        rightPanel.add(textAreaLabel);
+
+        // Text area from file
+        textArea = new JTextArea();
+        textArea.setLineWrap(true);
+        textArea.setWrapStyleWord(true);
+        textArea.setBorder(new EmptyBorder(10, 10, 10, 10));
+
+        // Scrolling area for file text area
+        JScrollPane textScrollArea = new JScrollPane(textArea);
+        textScrollArea.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        rightPanel.add(textScrollArea);
+
+        return rightPanel;
+    }
+
+    private JPanel openAndSavePanel() {
+        JPanel openSavePanel = new JPanel();
+        openSavePanel.setLayout(new FlowLayout());
+        openSavePanel.setBorder(new EmptyBorder(10, 0, 0, 0));
 
         // Open file button
-        openFile = new JButton("Open File");
-        openFile.setPreferredSize(new Dimension(100, 25));
-        openAndSavePanel.add(openFile);
+        openFileButton = createButton("Open File");
+        openSavePanel.add(openFileButton);
 
         // Save file button
-        saveFile = new JButton("Save File");
-        saveFile.setPreferredSize(new Dimension(100, 25));
-        openAndSavePanel.add(saveFile);
+        saveFileButton = createButton("Save File");
+        openSavePanel.add(saveFileButton);
 
-        leftMainPanel.add(openAndSavePanel);
+        return openSavePanel;
+    }
 
-        // ********** OPEN AND SAVE PANEL **********
-
-        JPanel encryptAndDecryptPanel = new JPanel();
-        encryptAndDecryptPanel.setLayout(new FlowLayout());
+    private JPanel encryptAndDecryptPanel() {
+        JPanel encryptDecryptPanel = new JPanel();
+        encryptDecryptPanel.setLayout(new FlowLayout());
 
         // Encrypt button
-        encryptButton = new JButton("ENCRYPT");
-        encryptButton.setPreferredSize(new Dimension(100, 25));
+        encryptButton = createButton("ENCRYPT");
         encryptButton.setBackground(Color.RED);
-        encryptAndDecryptPanel.add(encryptButton);
+        encryptDecryptPanel.add(encryptButton);
 
         // Decrypt button
-        decryptButton = new JButton("DECRYPT");
-        decryptButton.setPreferredSize(new Dimension(100, 25));
+        decryptButton = createButton("DECRYPT");
         decryptButton.setBackground(Color.GREEN);
-        encryptAndDecryptPanel.add(decryptButton);
+        encryptDecryptPanel.add(decryptButton);
 
-        leftMainPanel.add(encryptAndDecryptPanel);
+        return encryptDecryptPanel;
+    }
 
-        // ********** KEY PANEL **********
-
+    private JPanel loadAndGenerateKeyPanel() {
         JPanel keyPanel = new JPanel();
         keyPanel.setLayout(new GridLayout(2, 2));
         keyPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -116,16 +144,16 @@ public class GUI extends JFrame {
 
         // Load key text area
         loadKeyTextArea = new JTextField();
-        //keyPanel.add(loadKeyTextArea);
 
         // Scrolling area for generated key
         JScrollPane loadKeyTextScrollArea = new JScrollPane(loadKeyTextArea);
         loadKeyTextScrollArea.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
         keyPanel.add(loadKeyTextScrollArea);
 
-        leftMainPanel.add(keyPanel);
+        return keyPanel;
+    }
 
-        // ********** INFORMATION PANEL **********
+    private JPanel informationPanel() {
         JPanel informationAreaPanel = new JPanel();
         informationAreaPanel.setLayout(new BoxLayout(informationAreaPanel, BoxLayout.Y_AXIS));
         informationAreaPanel.setPreferredSize(new Dimension(400, 400));
@@ -136,58 +164,32 @@ public class GUI extends JFrame {
         informationLabel.setAlignmentX(CENTER_ALIGNMENT);
         informationAreaPanel.add(informationLabel);
 
-        // Information area for dialog
+        // Information text area for dialog
         informationTextArea = new JTextArea();
         informationTextArea.setLineWrap(true);
         informationTextArea.setWrapStyleWord(true);
-        // This is a dialog, not be edited by the user
+        // This is a dialog, not be editable by the user
         informationTextArea.setEditable(false);
         informationTextArea.setBackground(new Color(1, 36, 86));
         informationTextArea.setForeground(Color.WHITE);
         informationTextArea.setBorder(new EmptyBorder(10, 10, 10, 10));
-
-        // Automatically scroll informationTextArea as text appends
-        DefaultCaret caret = (DefaultCaret)informationTextArea.getCaret();
-        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 
         // Information area for dialog scrollable
         JScrollPane informationAreaScroll = new JScrollPane(informationTextArea);
         informationAreaScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         informationAreaPanel.add(informationAreaScroll);
 
-        leftMainPanel.add(informationAreaPanel);
+        // Automatically scroll informationTextArea as text appends
+        DefaultCaret caret = (DefaultCaret)informationTextArea.getCaret();
+        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 
-        this.add(leftMainPanel);
+        return informationAreaPanel;
+    }
 
-        // *********** RIGHT MAIN PANEL ***********
-
-        JPanel rightMainPanel = new JPanel();
-        rightMainPanel.setLayout(new BoxLayout(rightMainPanel, BoxLayout.Y_AXIS));
-        rightMainPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-        rightMainPanel.setBackground(new Color(1, 36, 86));
-
-        // Label for text area from file
-        JLabel textAreaLabel = new JLabel("FILE DATA");
-        textAreaLabel.setAlignmentX(CENTER_ALIGNMENT);
-        textAreaLabel.setForeground(Color.WHITE);
-        rightMainPanel.add(textAreaLabel);
-
-        // Text area from file
-        textArea = new JTextArea();
-        textArea.setLineWrap(true);
-        textArea.setWrapStyleWord(true);
-        textArea.setBorder(new EmptyBorder(10, 10, 10, 10));
-
-        // Scrolling area for file text area
-        JScrollPane textScrollArea = new JScrollPane(textArea);
-        textScrollArea.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        rightMainPanel.add(textScrollArea);
-
-        this.add(rightMainPanel);
-
-        addActionListeners();
-        this.pack();
-        this.setVisible(true);
+    private JButton createButton(String title) {
+        JButton button = new JButton(title);
+        button.setPreferredSize(new Dimension(100, 25));
+        return button;
     }
 
     public static void appendInformationMessage(String message) {
@@ -198,7 +200,7 @@ public class GUI extends JFrame {
 
     public void addActionListeners() {
         // Open File Listener
-        openFile.addActionListener(new ActionListener() {
+        openFileButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JFileChooser fileChoice = new JFileChooser();
@@ -239,7 +241,7 @@ public class GUI extends JFrame {
         });
 
         // Save File listener
-        saveFile.addActionListener(new ActionListener() {
+        saveFileButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JFileChooser fileChoice = new JFileChooser();
@@ -253,7 +255,6 @@ public class GUI extends JFrame {
                         filename += ".txt";
 
                     File file = new File(filename);
-
                     try {
                         // Write the text area to the file
                         FileWriter writeToFile = new FileWriter(file);
@@ -319,7 +320,6 @@ public class GUI extends JFrame {
                 generateKeyTextArea.setText(key);
             }
         });
-
     }
 
 }

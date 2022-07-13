@@ -25,12 +25,12 @@ public class EncryptionDecryption {
             // Create a 128 bit key using the random number
             keyGenerator.init(128, secureRandom);
             key = keyGenerator.generateKey();
-            GUI.appendInformationMessage("A key has been generated. If you use this key to encrypt, ONLY this" +
+            GUIPanel.appendInformationMessage("A key has been generated. If you use this key to encrypt, ONLY this" +
                     " key again can be used to decrypt the message. Losing this key can lead to losing access to" +
                     " the message.");
         }
         catch (NoSuchAlgorithmException e) {
-            GUI.appendInformationMessage("An error has occurred in key creation. Try generating" +
+            GUIPanel.appendInformationMessage("An error has occurred in key creation. Try generating" +
                     " a new key or restart the application.");
         }
         return key;
@@ -52,16 +52,16 @@ public class EncryptionDecryption {
                 // Add a tag to show the data is encrypted
                 String dataWithTag = FormattingAndConversion.addEncryptionTag(encodeData);
 
-                GUI.appendInformationMessage("Data has been encrypted.");
+                GUIPanel.appendInformationMessage("Data has been encrypted.");
                 return dataWithTag;
             }
             else {
-                GUI.appendInformationMessage("This data is already encrypted and cannot be encrypted again.");
+                GUIPanel.appendInformationMessage("This data is already encrypted and cannot be encrypted again.");
             }
         }
         catch (Exception e) {
             e.printStackTrace();
-            GUI.appendInformationMessage("An error has occurred during encryption." +
+            GUIPanel.appendInformationMessage("An error has occurred during encryption." +
                     " Retry encryption or restart the application.");
         }
         // Keeps the data unchanged otherwise if encryption process failed
@@ -82,19 +82,19 @@ public class EncryptionDecryption {
                 byte[] encryptedDataBytes = FormattingAndConversion.decodeData(tagRemovedData);
                 byte[] decryptedDataBytes = cipher.doFinal(encryptedDataBytes);
 
-                GUI.appendInformationMessage("Data has been decrypted.");
+                GUIPanel.appendInformationMessage("Data has been decrypted.");
                 // Retrieve the original message and return it
                 return new String(decryptedDataBytes);
             }
             else {
-                GUI.appendInformationMessage("This data is already decrypted and cannot be decrypted again.");
+                GUIPanel.appendInformationMessage("This data is already decrypted and cannot be decrypted again.");
             }
         }
         catch (BadPaddingException keyException) {
-            GUI.appendInformationMessage("Unable to decrypt the data with the given key.");
+            GUIPanel.appendInformationMessage("Unable to decrypt the data with the given key.");
         }
         catch (Exception e) {
-            GUI.appendInformationMessage("An error has occurred during decryption." +
+            GUIPanel.appendInformationMessage("An error has occurred during decryption." +
                     " Retry decryption or restart the application.");
         }
         // Return the input data if data could not be decrypted
