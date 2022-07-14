@@ -7,6 +7,26 @@ import java.security.SecureRandom;
 /**
  * EncryptionDecryption.java
  *
+ * - Uses the Advanced Encryption Standard (AES) algorithm as a symmetric key encryption algorithm is required.
+ * - Uses a 256 bit key size.
+ * - Uses PKCS#5 padding to meet the 128 bit block size requirement.
+ * - Uses Cipher Block Chaining (CBC) mode with a random 16 byte Initialisation Vector.
+ * - Uses the MIME encoding/decoding scheme.
+ *
+ * Encryption
+ * Retrieves the bytes from the original data and encrypts this data using an IV and a Key.
+ * The encrypted bytes is concatenated with the IV with the IV bytes at the start. The full message
+ * is encoded with the MIME encoding scheme. An encryption tag is then appended to the end of this
+ * encoded message to show the message is encrypted.
+ *
+ * Decryption
+ * Removes the encryption tag from the end of the string if the data is encrypted.
+ * The message is decoded using the MIME encoding scheme. The message now consists of
+ * two parts, the IV (128 bits/16 bytes) and the encrypted data. First 16 bytes is extracted
+ * to retrieve the original IV and the rest becomes the encrypted data. Data is decrypted with
+ * the IV and the Key (retrieved from user input). Original data is retrieved by converting the
+ * decrypted data to a string.
+ *
  * @author Kush Bharakhada
  */
 
@@ -18,14 +38,16 @@ public class EncryptionDecryption {
 
     public static SecretKey createKey() {
         SecretKey key = null;
+        final int KEY_SIZE = 256;
 
         try {
             // Generate a strong random number
             SecureRandom secureRandom = new SecureRandom();
             KeyGenerator keyGenerator = KeyGenerator.getInstance(ENCRYPTION_TYPE);
             // Create a 256 bit key using the random number
-            keyGenerator.init(256, secureRandom);
+            keyGenerator.init(KEY_SIZE, secureRandom);
             key = keyGenerator.generateKey();
+
             GUIPanel.appendInformationMessage("A key has been generated. If you use this key to encrypt, ONLY this" +
                     " key again can be used to decrypt the message. Losing this key can lead to losing access to" +
                     " the message.");

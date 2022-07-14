@@ -5,16 +5,17 @@ import java.util.Base64;
  * FormattingAndConversion.java
  *
  * Provides conversions required for the encryption and decryption process.
- * Formats/modifies the encrypted data to see whether the data is already
- * encrypted or decrypted (to avoid allowing multiple encryption/decryption on a single file).
+ * Modifies the data to see whether the data is already
+ * encrypted or decrypted (to avoid allowing multiple encryption/decryption on a single file)
+ * using a tag.
  *
  * @author Kush Bharakhada
  */
 
 public class FormattingAndConversion {
 
-    // This tag signifies if data is already encrypted/decrypted
-    // Appended to the start of the encrypted data and removed before decryption
+    // Tag signifies if data is already encrypted/decrypted
+    // Appended to the end of the encrypted and encoded data and removed before decryption
     private static final String TAG = ":encrypted";
 
     public static String bytesToHex(byte[] byteArray) {
@@ -55,7 +56,7 @@ public class FormattingAndConversion {
     }
 
     public static String removeEncryptionTag(String data) {
-        // Remove the tag from the start of the data
+        // Remove the tag from the end of the data
         return data.substring(0, data.length() - TAG.length());
     }
 
@@ -68,6 +69,7 @@ public class FormattingAndConversion {
 
     public static byte[] concatBytes(byte[] arrayA, byte[] arrayB) {
         byte[] bothArrays = new byte[arrayA.length + arrayB.length];
+        // Combine byte arrays A and B
         System.arraycopy(arrayA, 0, bothArrays, 0, arrayA.length);
         System.arraycopy(arrayB, 0, bothArrays, arrayA.length, arrayB.length);
         return bothArrays;
