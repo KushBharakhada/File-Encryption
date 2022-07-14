@@ -8,10 +8,10 @@ Just for fun side encryption project. Allows a user to encrypt and decrypt the c
 - Cipher Block Chaining (CBC) mode with a random 16 byte Initialisation Vector.
 - MIME encoding/decoding scheme.
 
-## Encryption
+## Encryption Process
 Retrieves the bytes from the original data and encrypts this data using an IV and a Key. The encrypted bytes is concatenated with the IV with the IV bytes at the start. The full message is encoded with the MIME encoding scheme. An encryption tag is then appended to the end of this encoded message to show the message is encrypted.
 
-## Decryption
+## Decryption Process
 Removes the encryption tag from the end of the string if the data is encrypted. The message is decoded using the MIME encoding scheme. The message now consists of two parts, the IV (128 bits/16 bytes) and the encrypted data. First 16 bytes are extracted to retrieve the original IV and the rest becomes the encrypted data. Data is decrypted with the IV and the Key (retrieved from user input). Original data is retrieved by converting the decrypted data to a string.
 
 ## Launch Screen
