@@ -1,5 +1,5 @@
 # File Encryption
-Just for fun side encrpytion project. Allows a user to encrypt and decrypt the contents of a .txt file.
+Just for fun side encryption project. Allows a user to encrypt and decrypt the contents of a .txt file.
 
 ## The program uses:
 - The Advanced Encryption Standard (AES) algorithm as a Symmetric Key encryption algorithm is required.
